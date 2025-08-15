@@ -2,7 +2,7 @@ name: Build and Push ML Image
 
 on:
   push:
-    branches: [ "Mlpipeline" ]
+    branches: [ "week1" ]
 
 jobs:
   build:
