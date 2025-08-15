@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:14
+    container_name: ml_db
+    environment:
+      POSTGRES_USER: mluser
+      POSTGRES_PASSWORD: mlpass
+      POSTGRES_DB: mldb
+    ports:
+      - "5432:5432"   # optional, for local psql/GUI
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mluser -d mldb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  trainer:
+    build: .
+    container_name: ml_trainer
+    command: python train.py
+    volumes:
+      - ./ml_data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  analyzer:
+    build: .
+    container_name: ml_analyzer
+    command: python analyze.py
+    environment:
+      DB_NAME: mldb
+      DB_USER: mluser
+      DB_PASSWORD: mlpass
+      DB_HOST: db
+    volumes:
+      - ./ml_data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pg_data:
