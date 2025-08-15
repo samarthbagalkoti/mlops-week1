@@ -1,5 +1,5 @@
 pandas
 numpy
 scikit-learn
-psycopg2-binary
-mlflow 
+psycopg2-binary 
+mlflow
